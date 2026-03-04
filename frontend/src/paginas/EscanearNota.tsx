@@ -28,7 +28,7 @@ export default function EscanearNota() {
 
   useEffect(() => {
     return () => {
-      if (scannerRef.current?.isScanning()) {
+      if (scannerRef.current?.isScanning) {
         scannerRef.current.stop().catch(() => {});
       }
     };
@@ -62,7 +62,7 @@ export default function EscanearNota() {
   }
 
   function cancelarScan() {
-    if (scannerRef.current?.isScanning()) {
+    if (scannerRef.current?.isScanning) {
       scannerRef.current.stop().then(() => {
         scannerRef.current = null;
         setStatus("idle");
