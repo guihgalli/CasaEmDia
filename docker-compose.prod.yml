@@ -1,0 +1,16 @@
+# Override para produção com Nginx no host
+# Uso: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# O frontend expõe apenas 8080 no host (localhost). Nginx no host escuta em
+# 8080 (HTTP) e 8443 (HTTPS) para não conflitar com outro serviço em 80/443.
+
+services:
+  backend:
+    ports: []   # não expor 3000 para fora
+
+  frontend:
+    ports:
+      - "127.0.0.1:8080:80"   # só localhost; Nginx do host usa 8080/8443
+
+  postgres:
+    ports: []   # não expor 5432 para fora

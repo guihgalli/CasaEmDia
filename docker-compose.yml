@@ -1,0 +1,53 @@
+# Casa em Dia - Ambiente para Linux (EC2 AWS)
+# Uso: docker-compose up -d
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: casaemdia-db
+    environment:
+      POSTGRES_USER: casaemdia
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-casaemdia_seguro}
+      POSTGRES_DB: casaemdia
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U casaemdia -d casaemdia"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: casaemdia-api
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://casaemdia:${POSTGRES_PASSWORD:-casaemdia_seguro}@postgres:5432/casaemdia
+      JWT_SECRET: ${JWT_SECRET:-altere-em-producao}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-altere-refresh-em-producao}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: casaemdia-web
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3000}
+    ports:
+      - "8080:80"   # HTTP na 8080 (evita conflito com serviço na 80/443)
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
