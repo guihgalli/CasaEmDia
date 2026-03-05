@@ -17,19 +17,51 @@ router.get("/", async (req, res, next) => {
     const inicio = new Date(ano, mes - 1, 1);
     const fim = new Date(ano, mes, 1);
 
-    // Receitas ativas (todas as cadastradas e ativas entram no total do mês)
-    const receitas = await prisma.receita.aggregate({
-      where: { casaId, ativo: true },
-      _sum: { valor: true },
-    });
-    const totalReceitas = Number(receitas._sum.valor ?? 0);
-
-    // Despesas fixas ativas e recorrentes
-    const despesasFixas = await prisma.despesaFixa.aggregate({
+    // Receitas:
+    // - recorrentes: entram em todos os meses
+    // - não recorrentes: entram apenas no mês de criação (competência)
+    const receitasRecorrentes = await prisma.receita.aggregate({
       where: { casaId, ativo: true, recorrente: true },
       _sum: { valor: true },
     });
-    const totalDespesasFixas = Number(despesasFixas._sum.valor ?? 0);
+    const receitasNaoRecorrentes = await prisma.receita.aggregate({
+      where: {
+        casaId,
+        ativo: true,
+        recorrente: false,
+        criadoEm: { gte: inicio, lt: fim },
+      },
+      _sum: { valor: true },
+    });
+    const totalReceitas =
+      Number(receitasRecorrentes._sum.valor ?? 0) +
+      Number(receitasNaoRecorrentes._sum.valor ?? 0);
+
+    // Despesas fixas:
+    // - recorrentes sem quantidadeParcelas: aparecem em todos os meses
+    // - recorrentes com quantidadeParcelas: aparecem apenas nos primeiros N meses a partir de criadoEm
+    const despesasFixasAtivas = await prisma.despesaFixa.findMany({
+      where: { casaId, ativo: true, recorrente: true },
+    });
+
+    const totalDespesasFixas = despesasFixasAtivas.reduce((total, despesa) => {
+      const criadoEm = despesa.criadoEm;
+      const inicioAno = inicio.getFullYear();
+      const inicioMes = inicio.getMonth(); // 0-11
+
+      const criadoAno = criadoEm.getFullYear();
+      const criadoMes = criadoEm.getMonth(); // 0-11
+
+      const diffMeses = (inicioAno - criadoAno) * 12 + (inicioMes - criadoMes);
+
+      const limiteParcelas = despesa.quantidadeParcelas ?? Infinity;
+
+      if (diffMeses >= 0 && diffMeses < limiteParcelas) {
+        return total + Number(despesa.valor);
+      }
+
+      return total;
+    }, 0);
 
     // Despesas extras no mês
     const despesasExtras = await prisma.despesaExtra.aggregate({

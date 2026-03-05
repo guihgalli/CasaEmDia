@@ -13,6 +13,7 @@ const criarSchema = z.object({
   valor: z.number().positive("Valor deve ser positivo"),
   diaVencimento: z.number().int().min(1).max(31),
   recorrente: z.boolean().default(true),
+  quantidadeParcelas: z.number().int().min(1).max(600).optional().nullable(),
 });
 
 const atualizarSchema = criarSchema.partial();
@@ -43,6 +44,7 @@ router.post("/", async (req, res, next) => {
         valor: body.valor,
         diaVencimento: body.diaVencimento,
         recorrente: body.recorrente,
+        quantidadeParcelas: body.quantidadeParcelas ?? null,
       },
     });
     res.status(201).json({ ...despesa, valor: Number(despesa.valor) });

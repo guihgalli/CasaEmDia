@@ -8,6 +8,7 @@ interface DespesaFixa {
   diaVencimento: number;
   recorrente: boolean;
   ativo: boolean;
+  quantidadeParcelas?: number | null;
 }
 
 function formatarMoeda(valor: number) {
@@ -23,6 +24,7 @@ export default function DespesasFixas() {
   const [valor, setValor] = useState("");
   const [diaVencimento, setDiaVencimento] = useState("10");
   const [recorrente, setRecorrente] = useState(true);
+  const [quantidadeParcelas, setQuantidadeParcelas] = useState("");
   const [erro, setErro] = useState("");
 
   const carregar = () => {
@@ -41,6 +43,7 @@ export default function DespesasFixas() {
     setErro("");
     const v = parseFloat(valor.replace(",", "."));
     const dia = parseInt(diaVencimento, 10);
+    const qtdParcelas = quantidadeParcelas ? parseInt(quantidadeParcelas, 10) : undefined;
     if (isNaN(v) || v <= 0) {
       setErro("Valor inválido");
       return;
@@ -49,15 +52,26 @@ export default function DespesasFixas() {
       setErro("Dia de vencimento entre 1 e 31");
       return;
     }
+    if (recorrente && quantidadeParcelas && (isNaN(qtdParcelas!) || qtdParcelas! <= 0)) {
+      setErro("Quantidade de parcelas inválida");
+      return;
+    }
     try {
       await fetchApi("/api/despesas-fixas", {
         method: "POST",
-        body: JSON.stringify({ nome, valor: v, diaVencimento: dia, recorrente }),
+        body: JSON.stringify({
+          nome,
+          valor: v,
+          diaVencimento: dia,
+          recorrente,
+          quantidadeParcelas: recorrente ? qtdParcelas : undefined,
+        }),
       });
       setNome("");
       setValor("");
       setDiaVencimento("10");
       setRecorrente(true);
+      setQuantidadeParcelas("");
       setMostrarForm(false);
       carregar();
     } catch (err) {
@@ -121,6 +135,19 @@ export default function DespesasFixas() {
               Recorrente mensal
             </label>
           </div>
+          {recorrente && (
+            <div className="form-group">
+              <label>Quantidade de parcelas (opcional)</label>
+              <input
+                type="number"
+                min={1}
+                max={600}
+                value={quantidadeParcelas}
+                onChange={(e) => setQuantidadeParcelas(e.target.value)}
+                placeholder="Ex.: 12"
+              />
+            </div>
+          )}
           <button type="submit" className="btn btn-primary">Salvar</button>
         </form>
       )}
