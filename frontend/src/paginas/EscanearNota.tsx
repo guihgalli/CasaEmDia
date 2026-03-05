@@ -24,7 +24,6 @@ export default function EscanearNota() {
   const [data, setData] = useState(new Date().toISOString().slice(0, 10));
   const [categoria, setCategoria] = useState(CATEGORIAS[0]);
   const scannerRef = useRef<Html5Qrcode | null>(null);
-  const divLeitorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     return () => {
@@ -41,10 +40,16 @@ export default function EscanearNota() {
 
     async function iniciarScanner() {
       try {
+        const cameras = await Html5Qrcode.getCameras();
+        if (!cameras.length) {
+          throw new Error("Nenhuma câmera encontrada neste dispositivo.");
+        }
+        const cameraId = cameras.find((c) => /back|rear|traseira/i.test(c.label))?.id ?? cameras[0].id;
+
         const scanner = new Html5Qrcode("leitor-qr");
         scannerRef.current = scanner;
         await scanner.start(
-          { facingMode: "environment" },
+          cameraId,
           { fps: 5, qrbox: { width: 250, height: 250 } },
           (decodedText) => {
             if (!ativo) return;
@@ -61,7 +66,10 @@ export default function EscanearNota() {
         );
       } catch (e) {
         if (!ativo) return;
-        setErro("Não foi possível acessar a câmera. Verifique as permissões ou use o cadastro manual.");
+        const mensagem = e instanceof Error ? e.message : "Falha ao iniciar câmera.";
+        setErro(
+          `Não foi possível acessar a câmera (${mensagem}). Verifique permissões do navegador e se o site está em HTTPS/localhost.`
+        );
         setStatus("idle");
       }
     }
@@ -113,6 +121,7 @@ export default function EscanearNota() {
 
       {status === "idle" && (
         <div className="card">
+          {erro && <p className="alert alert-error">{erro}</p>}
           <p className="muted" style={{ marginBottom: "1rem" }}>
             Aponte a câmera para o QR Code da nota fiscal. Se o valor não for identificado, preencha manualmente após o scan.
           </p>
@@ -124,7 +133,7 @@ export default function EscanearNota() {
 
       {status === "scanning" && (
         <div className="card">
-          <div id="leitor-qr" ref={divLeitorRef} style={{ width: "100%", maxWidth: "400px", margin: "0 auto 1rem" }} />
+          <div id="leitor-qr" style={{ width: "100%", maxWidth: "400px", margin: "0 auto 1rem" }} />
           {erro && <p className="alert alert-error">{erro}</p>}
           <button type="button" className="btn btn-secondary full" onClick={cancelarScan}>
             Cancelar
