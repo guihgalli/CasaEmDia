@@ -13,7 +13,7 @@ Internet → Nginx (8080/8443) → Docker: frontend (localhost:8080) + backend (
 ```
 
 - **Nginx** no host: escuta em **8080** (HTTP) e **8443** (HTTPS), termina SSL e encaminha para o container do frontend.
-- **Frontend** (container): escuta em `127.0.0.1:8080` no host; serve o SPA e faz proxy de `/api` para o backend.
+- **Frontend** (container): escuta em `127.0.0.1:8081` no host; o Nginx faz proxy de 8080/8443 para ele.
 - **Backend** e **PostgreSQL** não são expostos externamente.
 
 ---
@@ -113,9 +113,9 @@ Para o deploy com Nginx no host, o frontend será acessado via proxy; não é ne
 
 ---
 
-## 5. Subir a aplicação (porta interna 8080)
+## 5. Subir a aplicação (porta interna 8081)
 
-O container do frontend expõe a porta **8080** apenas em localhost; o Nginx do host escuta em **8080** e **8443**. Use **sempre os dois arquivos** (o `.prod.yml` é só override; sozinho dá erro "service has neither image nor build"):
+O container do frontend expõe a porta **8081** em localhost (evita conflito se a 8080 já estiver em uso); o Nginx do host escuta em **8080** e **8443** e faz proxy para o container. Use **sempre os dois arquivos** (o `.prod.yml` é só override; sozinho dá erro "service has neither image nor build"):
 
 ```bash
 # Na raiz do projeto (obrigatório: -f docker-compose.yml -f docker-compose.prod.yml)
@@ -126,7 +126,7 @@ Isso sobe:
 
 - **PostgreSQL** (apenas rede interna)
 - **Backend** (apenas rede interna, porta 3000)
-- **Frontend** em **localhost:8080** (acessível só pelo Nginx)
+- **Frontend** em **localhost:8081** (Nginx em 8080/8443 faz proxy para ele)
 
 Verifique:
 
@@ -258,7 +258,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml down
 | Arquivo | Uso |
 |--------|-----|
 | `docker-compose.yml` | Serviços da aplicação |
-| `docker-compose.prod.yml` | Override: frontend em 8080, sem expor backend/postgres |
+| `docker-compose.prod.yml` | Override: frontend em 8081, sem expor backend/postgres |
 | `deploy/nginx-casaemdia.conf` | Configuração Nginx nas portas **8080** (HTTP) e **8443** (HTTPS) |
 | `docs/DEPLOY-EC2.md` | Este guia |
 
