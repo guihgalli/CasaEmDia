@@ -313,7 +313,7 @@ export default function Relatorios() {
                             background: isAtual
                               ? "linear-gradient(180deg,#ef4444,#b91c1c)"
                               : "linear-gradient(180deg,#60a5fa,#2563eb)",
-                            height,
+                            height: altura,
                             transition: "height 0.3s ease",
                           }}
                         />
