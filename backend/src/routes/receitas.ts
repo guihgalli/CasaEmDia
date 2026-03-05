@@ -19,7 +19,7 @@ const atualizarSchema = criarSchema.partial();
 // Listar receitas da casa
 router.get("/", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const receitas = await prisma.receita.findMany({
       where: { casaId },
       orderBy: { nome: "asc" },
@@ -33,7 +33,7 @@ router.get("/", async (req, res, next) => {
 // Criar receita
 router.post("/", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const body = criarSchema.parse(req.body);
     const receita = await prisma.receita.create({
       data: {
@@ -52,7 +52,7 @@ router.post("/", async (req, res, next) => {
 // Atualizar receita
 router.patch("/:id", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const id = req.params.id;
     const body = atualizarSchema.parse(req.body);
     const receita = await prisma.receita.findFirst({
@@ -72,7 +72,7 @@ router.patch("/:id", async (req, res, next) => {
 // Remover receita (soft: desativar)
 router.delete("/:id", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const id = req.params.id;
     const receita = await prisma.receita.findFirst({
       where: { id, casaId },

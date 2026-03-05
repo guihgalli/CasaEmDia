@@ -10,7 +10,7 @@ router.use(requireCasa);
 // GET /api/dashboard?mes=3&ano=2025
 router.get("/", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const mes = Number(req.query.mes) || new Date().getMonth() + 1;
     const ano = Number(req.query.ano) || new Date().getFullYear();
 

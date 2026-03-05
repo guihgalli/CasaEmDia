@@ -20,7 +20,7 @@ const atualizarSchema = criarSchema.partial();
 // Listar despesas fixas da casa
 router.get("/", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const list = await prisma.despesaFixa.findMany({
       where: { casaId },
       orderBy: { diaVencimento: "asc" },
@@ -34,7 +34,7 @@ router.get("/", async (req, res, next) => {
 // Criar despesa fixa
 router.post("/", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const body = criarSchema.parse(req.body);
     const despesa = await prisma.despesaFixa.create({
       data: {
@@ -54,7 +54,7 @@ router.post("/", async (req, res, next) => {
 // Atualizar despesa fixa
 router.patch("/:id", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const id = req.params.id;
     const body = atualizarSchema.parse(req.body);
     const existente = await prisma.despesaFixa.findFirst({
@@ -74,7 +74,7 @@ router.patch("/:id", async (req, res, next) => {
 // Remover (soft: desativar)
 router.delete("/:id", async (req, res, next) => {
   try {
-    const casaId = (req as RequestWithAuth).casaId!;
+    const casaId = (req as unknown as RequestWithAuth).casaId!;
     const id = req.params.id;
     const existente = await prisma.despesaFixa.findFirst({
       where: { id, casaId },

@@ -21,7 +21,7 @@ const adicionarMembroSchema = z.object({
 // GET /api/casa - dados da casa do usuário e lista de membros
 router.get("/", async (req, res, next) => {
   try {
-    const { casaId } = req as RequestWithAuth;
+    const { casaId } = req as unknown as RequestWithAuth;
     if (!casaId) {
       return res.json({ casa: null, membros: [] });
     }
@@ -48,7 +48,7 @@ router.get("/", async (req, res, next) => {
 // POST /api/casa - criar casa (se o usuário ainda não tiver)
 router.post("/", async (req, res, next) => {
   try {
-    const { usuarioId, casaId } = req as RequestWithAuth;
+    const { usuarioId, casaId } = req as unknown as RequestWithAuth;
     if (casaId) {
       return res.status(400).json({ erro: "Você já pertence a uma casa." });
     }
@@ -71,7 +71,7 @@ router.post("/", async (req, res, next) => {
 // POST /api/casa/membros - adicionar novo usuário à mesma casa (criar conta com acesso compartilhado)
 router.post("/membros", requireCasa, async (req, res, next) => {
   try {
-    const { casaId } = req as RequestWithAuth;
+    const { casaId } = req as unknown as RequestWithAuth;
     const body = adicionarMembroSchema.parse(req.body);
 
     const existe = await prisma.usuario.findUnique({ where: { email: body.email } });
