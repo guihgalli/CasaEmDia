@@ -92,14 +92,14 @@ export default function EscanearNota() {
 
   return (
     <>
-      <h2 style={{ marginBottom: "1rem" }}>Escanear nota fiscal</h2>
+      <h2 className="section-title" style={{ marginBottom: "1rem" }}>Escanear nota fiscal</h2>
 
       {status === "idle" && (
         <div className="card">
-          <p style={{ marginBottom: "1rem", color: "#6b7280" }}>
+          <p className="muted" style={{ marginBottom: "1rem" }}>
             Aponte a câmera para o QR Code da nota fiscal. Se o valor não for identificado, preencha manualmente após o scan.
           </p>
-          <button type="button" className="btn btn-primary" style={{ width: "100%" }} onClick={iniciarCamera}>
+          <button type="button" className="btn btn-primary full" onClick={iniciarCamera}>
             Abrir câmera e escanear
           </button>
         </div>
@@ -108,8 +108,8 @@ export default function EscanearNota() {
       {status === "scanning" && (
         <div className="card">
           <div id="leitor-qr" ref={divLeitorRef} style={{ width: "100%", maxWidth: "400px", margin: "0 auto 1rem" }} />
-          {erro && <p style={{ color: "#dc2626", marginBottom: "0.5rem" }}>{erro}</p>}
-          <button type="button" className="btn btn-secondary" style={{ width: "100%" }} onClick={cancelarScan}>
+          {erro && <p className="alert alert-error">{erro}</p>}
+          <button type="button" className="btn btn-secondary full" onClick={cancelarScan}>
             Cancelar
           </button>
         </div>
@@ -123,7 +123,7 @@ export default function EscanearNota() {
             salvar();
           }}
         >
-          {erro && <p style={{ color: "#dc2626", marginBottom: "0.5rem" }}>{erro}</p>}
+          {erro && <p className="alert alert-error">{erro}</p>}
           <div className="form-group">
             <label>Nome do estabelecimento</label>
             <input value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -151,7 +151,7 @@ export default function EscanearNota() {
               ))}
             </select>
           </div>
-          <div style={{ display: "flex", gap: "0.5rem" }}>
+          <div className="inline-row">
             <button type="button" className="btn btn-secondary" onClick={() => setStatus("idle")}>
               Descartar
             </button>

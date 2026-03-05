@@ -25,15 +25,13 @@ export default function Login() {
   }
 
   return (
-    <div className="container" style={{ maxWidth: "360px", paddingTop: "3rem" }}>
-      <h1 style={{ marginBottom: "0.5rem" }}>Casa em Dia</h1>
-      <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>Entre na sua conta</p>
+    <div className="container auth-wrap">
+      <h1 className="auth-title">Bem-vindo de volta</h1>
+      <p className="muted" style={{ marginBottom: "1.5rem" }}>
+        Acesse sua conta para acompanhar receitas e despesas da casa.
+      </p>
       <form onSubmit={handleSubmit} className="card">
-        {erro && (
-          <div style={{ padding: "0.75rem", background: "#fef2f2", color: "#dc2626", borderRadius: "8px", marginBottom: "1rem" }}>
-            {erro}
-          </div>
-        )}
+        {erro && <div className="alert alert-error">{erro}</div>}
         <div className="form-group">
           <label htmlFor="email">E-mail</label>
           <input
@@ -56,7 +54,7 @@ export default function Login() {
             autoComplete="current-password"
           />
         </div>
-        <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "0.5rem" }} disabled={carregando}>
+        <button type="submit" className="btn btn-primary full" style={{ marginTop: "0.5rem" }} disabled={carregando}>
           {carregando ? "Entrando..." : "Entrar"}
         </button>
         <p style={{ marginTop: "1rem", fontSize: "0.875rem" }}>

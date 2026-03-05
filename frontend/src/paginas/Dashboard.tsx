@@ -60,11 +60,11 @@ export default function Dashboard() {
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+      <div className="section-head">
         <button type="button" className="btn btn-secondary" onClick={anterior} aria-label="Mês anterior">
           ‹
         </button>
-        <h2 style={{ fontSize: "1.125rem", fontWeight: 600 }}>
+        <h2 className="section-title" style={{ fontSize: "1.125rem" }}>
           {MESES[dados.mes - 1]} {dados.ano}
         </h2>
         <button type="button" className="btn btn-secondary" onClick={proximo} aria-label="Próximo mês">
@@ -73,7 +73,7 @@ export default function Dashboard() {
       </div>
 
       <div className="card" style={{ textAlign: "center", marginBottom: "1rem" }}>
-        <p style={{ fontSize: "0.875rem", color: "#6b7280", marginBottom: "0.25rem" }}>Saldo do mês</p>
+        <p className="muted" style={{ fontSize: "0.875rem", marginBottom: "0.25rem" }}>Saldo do mês</p>
         <p className={dados.positivo ? "saldo-positivo" : "saldo-negativo"} style={{ fontSize: "1.75rem", fontWeight: 700 }}>
           {formatarMoeda(dados.saldo)}
         </p>

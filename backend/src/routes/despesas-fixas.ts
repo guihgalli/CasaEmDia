@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
-import { authMiddleware } from "../middlewares/auth.js";
+import { authMiddleware, loadCasaId, requireCasa, type RequestWithAuth } from "../middlewares/auth.js";
 
 const router = Router();
 router.use(authMiddleware);
+router.use(loadCasaId);
+router.use(requireCasa);
 
 const criarSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
@@ -15,12 +17,12 @@ const criarSchema = z.object({
 
 const atualizarSchema = criarSchema.partial();
 
-// Listar despesas fixas do usuário
+// Listar despesas fixas da casa
 router.get("/", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const list = await prisma.despesaFixa.findMany({
-      where: { usuarioId },
+      where: { casaId },
       orderBy: { diaVencimento: "asc" },
     });
     res.json(list.map((d) => ({ ...d, valor: Number(d.valor) })));
@@ -32,11 +34,11 @@ router.get("/", async (req, res, next) => {
 // Criar despesa fixa
 router.post("/", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const body = criarSchema.parse(req.body);
     const despesa = await prisma.despesaFixa.create({
       data: {
-        usuarioId,
+        casaId,
         nome: body.nome,
         valor: body.valor,
         diaVencimento: body.diaVencimento,
@@ -52,11 +54,11 @@ router.post("/", async (req, res, next) => {
 // Atualizar despesa fixa
 router.patch("/:id", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const id = req.params.id;
     const body = atualizarSchema.parse(req.body);
     const existente = await prisma.despesaFixa.findFirst({
-      where: { id, usuarioId },
+      where: { id, casaId },
     });
     if (!existente) return res.status(404).json({ erro: "Despesa fixa não encontrada" });
     const atualizada = await prisma.despesaFixa.update({
@@ -72,10 +74,10 @@ router.patch("/:id", async (req, res, next) => {
 // Remover (soft: desativar)
 router.delete("/:id", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const id = req.params.id;
     const existente = await prisma.despesaFixa.findFirst({
-      where: { id, usuarioId },
+      where: { id, casaId },
     });
     if (!existente) return res.status(404).json({ erro: "Despesa fixa não encontrada" });
     await prisma.despesaFixa.update({

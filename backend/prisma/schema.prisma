@@ -8,26 +8,38 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Casa {
+  id        String   @id @default(uuid())
+  nome      String?  // ex: "Casa Silva"
+  criadoEm  DateTime @default(now()) @map("criado_em")
+
+  usuarios       Usuario[]
+  receitas       Receita[]
+  despesasFixas  DespesaFixa[]
+  despesasExtras DespesaExtra[]
+
+  @@map("casas")
+}
+
 model Usuario {
   id                String    @id @default(uuid())
   email             String    @unique
   senhaHash         String    @map("senha_hash")
   nome              String?
+  casaId            String?   @map("casa_id")
   criadoEm          DateTime  @default(now()) @map("criado_em")
   atualizadoEm      DateTime  @updatedAt @map("atualizado_em")
   tokenRecuperacao  String?   @map("token_recuperacao")
   tokenRecuperacaoExpira DateTime? @map("token_recuperacao_expira")
 
-  receitas         Receita[]
-  despesasFixas    DespesaFixa[]
-  despesasExtras   DespesaExtra[]
+  casa Casa? @relation(fields: [casaId], references: [id], onDelete: SetNull)
 
   @@map("usuarios")
 }
 
 model Receita {
   id           String   @id @default(uuid())
-  usuarioId    String   @map("usuario_id")
+  casaId       String   @map("casa_id")
   nome         String
   valor        Decimal  @db.Decimal(12, 2)
   recorrente   Boolean  @default(true)
@@ -35,14 +47,14 @@ model Receita {
   criadoEm     DateTime @default(now()) @map("criado_em")
   atualizadoEm DateTime @updatedAt @map("atualizado_em")
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  casa Casa @relation(fields: [casaId], references: [id], onDelete: Cascade)
 
   @@map("receitas")
 }
 
 model DespesaFixa {
   id            String   @id @default(uuid())
-  usuarioId     String   @map("usuario_id")
+  casaId        String   @map("casa_id")
   nome          String
   valor         Decimal  @db.Decimal(12, 2)
   diaVencimento Int      @map("dia_vencimento") // 1-31
@@ -51,14 +63,14 @@ model DespesaFixa {
   criadoEm      DateTime @default(now()) @map("criado_em")
   atualizadoEm  DateTime @updatedAt @map("atualizado_em")
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  casa Casa @relation(fields: [casaId], references: [id], onDelete: Cascade)
 
   @@map("despesas_fixas")
 }
 
 model DespesaExtra {
   id          String   @id @default(uuid())
-  usuarioId   String   @map("usuario_id")
+  casaId      String   @map("casa_id")
   nome        String   // ex: nome do estabelecimento
   valor       Decimal  @db.Decimal(12, 2)
   data        DateTime @db.Date
@@ -66,7 +78,7 @@ model DespesaExtra {
   criadoEm    DateTime @default(now()) @map("criado_em")
   atualizadoEm DateTime @updatedAt @map("atualizado_em")
 
-  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  casa Casa @relation(fields: [casaId], references: [id], onDelete: Cascade)
 
   @@map("despesas_extras")
 }

@@ -79,8 +79,8 @@ export default function DespesasFixas() {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <h2 style={{ fontSize: "1.25rem" }}>Despesas fixas</h2>
+      <div className="section-head">
+        <h2 className="section-title">Despesas fixas</h2>
         <button type="button" className="btn btn-primary" onClick={() => setMostrarForm(!mostrarForm)}>
           {mostrarForm ? "Cancelar" : "+ Nova despesa fixa"}
         </button>
@@ -88,7 +88,7 @@ export default function DespesasFixas() {
 
       {mostrarForm && (
         <form onSubmit={handleSubmit} className="card" style={{ marginBottom: "1rem" }}>
-          {erro && <p style={{ color: "#dc2626", marginBottom: "0.5rem" }}>{erro}</p>}
+          {erro && <p className="alert alert-error">{erro}</p>}
           <div className="form-group">
             <label>Nome</label>
             <input value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -116,7 +116,7 @@ export default function DespesasFixas() {
             />
           </div>
           <div className="form-group">
-            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <label className="inline-row">
               <input type="checkbox" checked={recorrente} onChange={(e) => setRecorrente(e.target.checked)} />
               Recorrente mensal
             </label>
@@ -128,15 +128,15 @@ export default function DespesasFixas() {
       {carregando ? (
         <div className="card">Carregando...</div>
       ) : ativas.length === 0 ? (
-        <div className="card" style={{ color: "#6b7280" }}>Nenhuma despesa fixa. Adicione uma acima.</div>
+        <div className="card muted">Nenhuma despesa fixa. Adicione uma acima.</div>
       ) : (
-        <ul style={{ listStyle: "none" }}>
+        <ul className="list">
           {ativas.map((d) => (
-            <li key={d.id} className="card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <li key={d.id} className="card list-item">
               <div>
                 <strong>{d.nome}</strong>
                 <br />
-                <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>Vencimento dia {d.diaVencimento}</span>
+                <span className="list-meta">Vencimento dia {d.diaVencimento}</span>
                 <br />
                 <span className="saldo-negativo">{formatarMoeda(d.valor)}</span>
               </div>

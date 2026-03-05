@@ -26,15 +26,13 @@ export default function Cadastro() {
   }
 
   return (
-    <div className="container" style={{ maxWidth: "360px", paddingTop: "3rem" }}>
-      <h1 style={{ marginBottom: "0.5rem" }}>Casa em Dia</h1>
-      <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>Crie sua conta</p>
+    <div className="container auth-wrap">
+      <h1 className="auth-title">Crie sua conta</h1>
+      <p className="muted" style={{ marginBottom: "1.5rem" }}>
+        Comece agora a organizar o orçamento da sua família.
+      </p>
       <form onSubmit={handleSubmit} className="card">
-        {erro && (
-          <div style={{ padding: "0.75rem", background: "#fef2f2", color: "#dc2626", borderRadius: "8px", marginBottom: "1rem" }}>
-            {erro}
-          </div>
-        )}
+        {erro && <div className="alert alert-error">{erro}</div>}
         <div className="form-group">
           <label htmlFor="email">E-mail</label>
           <input
@@ -68,7 +66,7 @@ export default function Cadastro() {
             autoComplete="new-password"
           />
         </div>
-        <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "0.5rem" }} disabled={carregando}>
+        <button type="submit" className="btn btn-primary full" style={{ marginTop: "0.5rem" }} disabled={carregando}>
           {carregando ? "Cadastrando..." : "Cadastrar"}
         </button>
       </form>

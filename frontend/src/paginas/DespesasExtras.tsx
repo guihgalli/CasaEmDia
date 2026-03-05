@@ -92,13 +92,12 @@ export default function DespesasExtras() {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem", flexWrap: "wrap", gap: "0.5rem" }}>
-        <h2 style={{ fontSize: "1.25rem" }}>Despesas extras</h2>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+      <div className="section-head">
+        <h2 className="section-title">Despesas extras</h2>
+        <div className="inline-row" style={{ flexWrap: "wrap" }}>
           <select
             value={mes}
             onChange={(e) => setMes(Number(e.target.value))}
-            style={{ padding: "0.5rem", borderRadius: "8px", border: "1px solid #d1d5db" }}
           >
             {MESES.map((m, i) => (
               <option key={m} value={i + 1}>{m}</option>
@@ -107,7 +106,6 @@ export default function DespesasExtras() {
           <select
             value={ano}
             onChange={(e) => setAno(Number(e.target.value))}
-            style={{ padding: "0.5rem", borderRadius: "8px", border: "1px solid #d1d5db" }}
           >
             {[ano, ano - 1, ano - 2].map((a) => (
               <option key={a} value={a}>{a}</option>
@@ -122,7 +120,7 @@ export default function DespesasExtras() {
 
       {mostrarForm && (
         <form onSubmit={handleSubmit} className="card" style={{ marginBottom: "1rem" }}>
-          {erro && <p style={{ color: "#dc2626", marginBottom: "0.5rem" }}>{erro}</p>}
+          {erro && <p className="alert alert-error">{erro}</p>}
           <div className="form-group">
             <label>Nome / estabelecimento</label>
             <input value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -157,17 +155,17 @@ export default function DespesasExtras() {
       {carregando ? (
         <div className="card">Carregando...</div>
       ) : lista.length === 0 ? (
-        <div className="card" style={{ color: "#6b7280" }}>
+        <div className="card muted">
           Nenhuma despesa extra neste mês. Adicione manualmente ou <Link to="/escanear-nota">escaneie uma nota</Link>.
         </div>
       ) : (
-        <ul style={{ listStyle: "none" }}>
+        <ul className="list">
           {lista.map((d) => (
-            <li key={d.id} className="card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <li key={d.id} className="card list-item">
               <div>
                 <strong>{d.nome}</strong>
                 <br />
-                <span style={{ fontSize: "0.875rem", color: "#6b7280" }}>{formatarData(d.data)} · {d.categoria}</span>
+                <span className="list-meta">{formatarData(d.data)} · {d.categoria}</span>
                 <br />
                 <span className="saldo-negativo">{formatarMoeda(d.valor)}</span>
               </div>

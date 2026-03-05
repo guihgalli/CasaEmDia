@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
-import { authMiddleware } from "../middlewares/auth.js";
+import { authMiddleware, loadCasaId, requireCasa, type RequestWithAuth } from "../middlewares/auth.js";
 
 const router = Router();
 router.use(authMiddleware);
+router.use(loadCasaId);
+router.use(requireCasa);
 
 const criarSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
@@ -18,11 +20,11 @@ const atualizarSchema = criarSchema.partial();
 // Listar despesas extras (com filtro opcional de mês/ano)
 router.get("/", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const mes = req.query.mes ? Number(req.query.mes) : null;
     const ano = req.query.ano ? Number(req.query.ano) : null;
 
-    const where: { usuarioId: string; data?: { gte: Date; lt: Date } } = { usuarioId };
+    const where: { casaId: string; data?: { gte: Date; lt: Date } } = { casaId };
     if (mes != null && ano != null) {
       const inicio = new Date(ano, mes - 1, 1);
       const fim = new Date(ano, mes, 1);
@@ -42,12 +44,12 @@ router.get("/", async (req, res, next) => {
 // Criar despesa extra (manual ou a partir do QR Code)
 router.post("/", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const body = criarSchema.parse(req.body);
     const data = new Date(body.data + "T12:00:00.000Z");
     const despesa = await prisma.despesaExtra.create({
       data: {
-        usuarioId,
+        casaId,
         nome: body.nome,
         valor: body.valor,
         data,
@@ -67,11 +69,11 @@ router.post("/", async (req, res, next) => {
 // Atualizar despesa extra
 router.patch("/:id", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const id = req.params.id;
     const body = atualizarSchema.parse(req.body);
     const existente = await prisma.despesaExtra.findFirst({
-      where: { id, usuarioId },
+      where: { id, casaId },
     });
     if (!existente) return res.status(404).json({ erro: "Despesa extra não encontrada" });
     const data = body.data ? new Date(body.data + "T12:00:00.000Z") : undefined;
@@ -92,10 +94,10 @@ router.patch("/:id", async (req, res, next) => {
 // Remover despesa extra
 router.delete("/:id", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const id = req.params.id;
     const existente = await prisma.despesaExtra.findFirst({
-      where: { id, usuarioId },
+      where: { id, casaId },
     });
     if (!existente) return res.status(404).json({ erro: "Despesa extra não encontrada" });
     await prisma.despesaExtra.delete({ where: { id } });

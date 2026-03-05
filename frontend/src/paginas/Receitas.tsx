@@ -71,8 +71,8 @@ export default function Receitas() {
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-        <h2 style={{ fontSize: "1.25rem" }}>Receitas</h2>
+      <div className="section-head">
+        <h2 className="section-title">Receitas</h2>
         <button type="button" className="btn btn-primary" onClick={() => setMostrarForm(!mostrarForm)}>
           {mostrarForm ? "Cancelar" : "+ Nova receita"}
         </button>
@@ -80,7 +80,7 @@ export default function Receitas() {
 
       {mostrarForm && (
         <form onSubmit={handleSubmit} className="card" style={{ marginBottom: "1rem" }}>
-          {erro && <p style={{ color: "#dc2626", marginBottom: "0.5rem" }}>{erro}</p>}
+          {erro && <p className="alert alert-error">{erro}</p>}
           <div className="form-group">
             <label>Nome (ex: Salário João)</label>
             <input value={nome} onChange={(e) => setNome(e.target.value)} required />
@@ -97,7 +97,7 @@ export default function Receitas() {
             />
           </div>
           <div className="form-group">
-            <label style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <label className="inline-row">
               <input type="checkbox" checked={recorrente} onChange={(e) => setRecorrente(e.target.checked)} />
               Recorrente mensal
             </label>
@@ -109,14 +109,14 @@ export default function Receitas() {
       {carregando ? (
         <div className="card">Carregando...</div>
       ) : ativas.length === 0 ? (
-        <div className="card" style={{ color: "#6b7280" }}>Nenhuma receita cadastrada. Adicione uma acima.</div>
+        <div className="card muted">Nenhuma receita cadastrada. Adicione uma acima.</div>
       ) : (
-        <ul style={{ listStyle: "none" }}>
+        <ul className="list">
           {ativas.map((r) => (
-            <li key={r.id} className="card" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <li key={r.id} className="card list-item">
               <div>
                 <strong>{r.nome}</strong>
-                {r.recorrente && <span style={{ fontSize: "0.75rem", color: "#6b7280", marginLeft: "0.5rem" }}>recorrente</span>}
+                {r.recorrente && <span className="list-meta" style={{ marginLeft: "0.5rem" }}>recorrente</span>}
                 <br />
                 <span className="saldo-positivo">{formatarMoeda(r.valor)}</span>
               </div>

@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
-import { authMiddleware } from "../middlewares/auth.js";
+import { authMiddleware, loadCasaId, requireCasa, type RequestWithAuth } from "../middlewares/auth.js";
 
 const router = Router();
 router.use(authMiddleware);
+router.use(loadCasaId);
+router.use(requireCasa);
 
 const criarSchema = z.object({
   nome: z.string().min(1, "Nome é obrigatório"),
@@ -14,12 +16,12 @@ const criarSchema = z.object({
 
 const atualizarSchema = criarSchema.partial();
 
-// Listar receitas do usuário
+// Listar receitas da casa
 router.get("/", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const receitas = await prisma.receita.findMany({
-      where: { usuarioId },
+      where: { casaId },
       orderBy: { nome: "asc" },
     });
     res.json(receitas.map((r) => ({ ...r, valor: Number(r.valor) })));
@@ -31,11 +33,11 @@ router.get("/", async (req, res, next) => {
 // Criar receita
 router.post("/", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const body = criarSchema.parse(req.body);
     const receita = await prisma.receita.create({
       data: {
-        usuarioId,
+        casaId,
         nome: body.nome,
         valor: body.valor,
         recorrente: body.recorrente,
@@ -50,11 +52,11 @@ router.post("/", async (req, res, next) => {
 // Atualizar receita
 router.patch("/:id", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const id = req.params.id;
     const body = atualizarSchema.parse(req.body);
     const receita = await prisma.receita.findFirst({
-      where: { id, usuarioId },
+      where: { id, casaId },
     });
     if (!receita) return res.status(404).json({ erro: "Receita não encontrada" });
     const atualizada = await prisma.receita.update({
@@ -70,10 +72,10 @@ router.patch("/:id", async (req, res, next) => {
 // Remover receita (soft: desativar)
 router.delete("/:id", async (req, res, next) => {
   try {
-    const usuarioId = (req as unknown as { usuarioId: string }).usuarioId;
+    const casaId = (req as RequestWithAuth).casaId!;
     const id = req.params.id;
     const receita = await prisma.receita.findFirst({
-      where: { id, usuarioId },
+      where: { id, casaId },
     });
     if (!receita) return res.status(404).json({ erro: "Receita não encontrada" });
     await prisma.receita.update({

@@ -30,27 +30,23 @@ export default function RecuperarSenha() {
   }
 
   return (
-    <div className="container" style={{ maxWidth: "360px", paddingTop: "3rem" }}>
-      <h1 style={{ marginBottom: "0.5rem" }}>Recuperar senha</h1>
-      <p style={{ color: "#6b7280", marginBottom: "1.5rem" }}>
+    <div className="container auth-wrap">
+      <h1 className="auth-title">Recuperar senha</h1>
+      <p className="muted" style={{ marginBottom: "1.5rem" }}>
         Informe seu e-mail para receber o link de redefinição.
       </p>
       {enviado ? (
         <div className="card">
-          <p style={{ color: "#059669" }}>
+          <p className="alert alert-success">
             Se o e-mail existir em nossa base, você receberá as instruções para redefinir a senha.
           </p>
-          <Link to="/login" className="btn btn-primary" style={{ marginTop: "1rem", display: "inline-block" }}>
+          <Link to="/login" className="btn btn-primary" style={{ marginTop: "1rem", display: "inline-flex" }}>
             Voltar ao login
           </Link>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="card">
-          {erro && (
-            <div style={{ padding: "0.75rem", background: "#fef2f2", color: "#dc2626", borderRadius: "8px", marginBottom: "1rem" }}>
-              {erro}
-            </div>
-          )}
+          {erro && <div className="alert alert-error">{erro}</div>}
           <div className="form-group">
             <label htmlFor="email">E-mail</label>
             <input
@@ -62,7 +58,7 @@ export default function RecuperarSenha() {
               autoComplete="email"
             />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "0.5rem" }} disabled={carregando}>
+          <button type="submit" className="btn btn-primary full" style={{ marginTop: "0.5rem" }} disabled={carregando}>
             {carregando ? "Enviando..." : "Enviar"}
           </button>
         </form>

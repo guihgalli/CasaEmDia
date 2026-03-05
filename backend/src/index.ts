@@ -7,6 +7,7 @@ import { receitasRouter } from "./routes/receitas.js";
 import { despesasFixasRouter } from "./routes/despesas-fixas.js";
 import { despesasExtrasRouter } from "./routes/despesas-extras.js";
 import { dashboardRouter } from "./routes/dashboard.js";
+import { casaRouter } from "./routes/casa.js";
 import { erroHandler } from "./middlewares/erro.js";
 
 const app = express();
@@ -79,6 +80,7 @@ app.use("/api/receitas", receitasRouter);
 app.use("/api/despesas-fixas", despesasFixasRouter);
 app.use("/api/despesas-extras", despesasExtrasRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/casa", casaRouter);
 
 app.use(erroHandler);
 
