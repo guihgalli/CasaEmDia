@@ -8,6 +8,8 @@ import { despesasFixasRouter } from "./routes/despesas-fixas.js";
 import { despesasExtrasRouter } from "./routes/despesas-extras.js";
 import { dashboardRouter } from "./routes/dashboard.js";
 import { casaRouter } from "./routes/casa.js";
+import { objetivosRouter } from "./routes/objetivos.js";
+import { relatoriosRouter } from "./routes/relatorios.js";
 import { erroHandler } from "./middlewares/erro.js";
 
 const app = express();
@@ -81,6 +83,8 @@ app.use("/api/despesas-fixas", despesasFixasRouter);
 app.use("/api/despesas-extras", despesasExtrasRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/casa", casaRouter);
+app.use("/api/objetivos", objetivosRouter);
+app.use("/api/relatorios", relatoriosRouter);
 
 app.use(erroHandler);
 

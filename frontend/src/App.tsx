@@ -10,6 +10,8 @@ import DespesasFixas from "./paginas/DespesasFixas";
 import DespesasExtras from "./paginas/DespesasExtras";
 import EscanearNota from "./paginas/EscanearNota";
 import MinhaCasa from "./paginas/MinhaCasa";
+import Objetivos from "./paginas/Objetivos";
+import Relatorios from "./paginas/Relatorios";
 
 function RotaProtegida({ children }: { children: React.ReactNode }) {
   const { usuario, carregando } = useAuth();
@@ -38,6 +40,8 @@ export default function App() {
         <Route path="despesas-extras" element={<DespesasExtras />} />
         <Route path="escanear-nota" element={<EscanearNota />} />
         <Route path="casa" element={<MinhaCasa />} />
+        <Route path="objetivos" element={<Objetivos />} />
+        <Route path="relatorios" element={<Relatorios />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

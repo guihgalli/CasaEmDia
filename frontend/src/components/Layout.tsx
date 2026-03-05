@@ -89,6 +89,9 @@ export default function Layout() {
         <NavLink to="/" end className={({ isActive }) => (isActive ? "ativo" : "")}>
           Dashboard
         </NavLink>
+        <NavLink to="/objetivos" className={({ isActive }) => (isActive ? "ativo" : "")}>
+          Metas
+        </NavLink>
         <NavLink to="/receitas" className={({ isActive }) => (isActive ? "ativo" : "")}>
           Receitas
         </NavLink>
@@ -100,6 +103,9 @@ export default function Layout() {
         </NavLink>
         <NavLink to="/escanear-nota" className={({ isActive }) => (isActive ? "ativo" : "")}>
           Escanear nota
+        </NavLink>
+        <NavLink to="/relatorios" className={({ isActive }) => (isActive ? "ativo" : "")}>
+          Relatórios
         </NavLink>
         <NavLink to="/casa" className={({ isActive }) => (isActive ? "ativo" : "")}>
           Minha casa
