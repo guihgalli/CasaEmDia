@@ -53,10 +53,16 @@ export function parsearConteudoQR(conteudo: string): DadosNotaFiscal {
   const textoUnico = conteudo.replace(/\s+/g, " ");
 
   // Valor total:
-  // 1) Priorizar linhas com a palavra "total" (evitando "subtotal"), de baixo para cima.
+  // 1) Priorizar linhas com a palavra "total" (evitando "subtotal" e linhas de impostos/percentuais), de baixo para cima.
   for (const linha of [...linhas].reverse()) {
     const lower = linha.toLowerCase();
-    if (/\btotal\b/.test(lower) && !lower.includes("subtotal")) {
+    if (
+      /\btotal\b/.test(lower) &&
+      !lower.includes("subtotal") &&
+      !lower.includes("imposto") &&
+      !lower.includes("tribut") &&
+      !lower.includes("%")
+    ) {
       const v = extrairValor(linha);
       if (v != null) {
         resultado.valorTotal = v;
