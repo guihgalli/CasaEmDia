@@ -24,10 +24,15 @@ router.get("/despesas-extras-mensal", async (req, res, next) => {
     const anoBase = params.ano ?? agora.getFullYear();
     const mesesJanela = params.meses ?? 6;
 
-    // Período: últimos N meses até o mês atual do anoBase (ou ano informado)
-    const fim = new Date(anoBase, agora.getMonth() + 1, 1);
-    const inicio = new Date(fim);
-    inicio.setMonth(fim.getMonth() - (mesesJanela - 1));
+    // Mês "atual" considerado no relatório (para rotulagem)
+    const mesAtualIndex = agora.getMonth(); // 0-11
+    const mesAtual = new Date(anoBase, mesAtualIndex, 1);
+
+    // Período de busca no banco: do primeiro mês da janela até o primeiro dia
+    // do mês seguinte ao mês atual (intervalo semiaberto [início, fim))
+    const inicio = new Date(mesAtual);
+    inicio.setMonth(mesAtual.getMonth() - (mesesJanela - 1));
+    const fim = new Date(anoBase, mesAtualIndex + 1, 1);
 
     const despesas = await prisma.despesaExtra.findMany({
       where: {
