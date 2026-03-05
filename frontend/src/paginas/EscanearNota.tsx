@@ -112,7 +112,11 @@ export default function EscanearNota() {
       setErro(`Falha ao ler imagem: ${mensagem}`);
       setStatus("idle");
     } finally {
-      await leitorArquivo.clear().catch(() => {});
+      try {
+        leitorArquivo.clear();
+      } catch {
+        // Ignora erro de limpeza do leitor temporário.
+      }
       if (arquivoInputRef.current) {
         arquivoInputRef.current.value = "";
       }
