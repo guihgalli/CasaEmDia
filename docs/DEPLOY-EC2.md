@@ -115,10 +115,10 @@ Para o deploy com Nginx no host, o frontend será acessado via proxy; não é ne
 
 ## 5. Subir a aplicação (porta interna 8080)
 
-O container do frontend expõe a porta **8080** apenas em localhost; o Nginx do host escuta em **8080** e **8443**. Use o arquivo de override de produção:
+O container do frontend expõe a porta **8080** apenas em localhost; o Nginx do host escuta em **8080** e **8443**. Use **sempre os dois arquivos** (o `.prod.yml` é só override; sozinho dá erro "service has neither image nor build"):
 
 ```bash
-# Na raiz do projeto
+# Na raiz do projeto (obrigatório: -f docker-compose.yml -f docker-compose.prod.yml)
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ```
 
