@@ -87,3 +87,11 @@ export function parsearConteudoQR(conteudo: string): DadosNotaFiscal {
 
   return resultado;
 }
+
+/**
+ * Parseia texto OCR de cupom/nota para tentar preencher os mesmos campos.
+ * Reaproveita a lógica principal do parser de QR.
+ */
+export function parsearTextoCupom(conteudoOCR: string): DadosNotaFiscal {
+  return parsearConteudoQR(conteudoOCR);
+}

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { useAuth } from "../contextos/AuthContext";
-import { parsearConteudoQR } from "../utils/qrNotaFiscal";
+import { parsearConteudoQR, parsearTextoCupom } from "../utils/qrNotaFiscal";
 
 const CATEGORIAS = [
   "Mercado",
@@ -25,6 +25,13 @@ export default function EscanearNota() {
   const [categoria, setCategoria] = useState(CATEGORIAS[0]);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const arquivoInputRef = useRef<HTMLInputElement>(null);
+
+  function preencherFormularioPorDados(dados: { nomeEstabelecimento: string; valorTotal: number | null; dataCompra: string | null }) {
+    setNome(dados.nomeEstabelecimento || "Nota fiscal");
+    setValor(dados.valorTotal != null ? dados.valorTotal.toFixed(2).replace(".", ",") : "");
+    setData(dados.dataCompra || new Date().toISOString().slice(0, 10));
+    setStatus("form");
+  }
 
   useEffect(() => {
     return () => {
@@ -57,10 +64,7 @@ export default function EscanearNota() {
             scanner.stop().then(() => {
               scannerRef.current = null;
               const dados = parsearConteudoQR(decodedText);
-              setNome(dados.nomeEstabelecimento || "Nota fiscal");
-              setValor(dados.valorTotal != null ? dados.valorTotal.toFixed(2).replace(".", ",") : "");
-              setData(dados.dataCompra || new Date().toISOString().slice(0, 10));
-              setStatus("form");
+              preencherFormularioPorDados(dados);
             }).catch(() => setStatus("idle"));
           },
           () => {}
@@ -97,20 +101,37 @@ export default function EscanearNota() {
     if (!arquivo) return;
 
     setErro("");
-    setStatus("saving");
+    setStatus("scanning");
     const leitorArquivo = new Html5Qrcode("leitor-qr-arquivo");
 
     try {
       const decodedText = await leitorArquivo.scanFile(arquivo, false);
       const dados = parsearConteudoQR(decodedText);
-      setNome(dados.nomeEstabelecimento || "Nota fiscal");
-      setValor(dados.valorTotal != null ? dados.valorTotal.toFixed(2).replace(".", ",") : "");
-      setData(dados.dataCompra || new Date().toISOString().slice(0, 10));
-      setStatus("form");
+      preencherFormularioPorDados(dados);
     } catch (err) {
-      const mensagem = err instanceof Error ? err.message : "Não foi possível ler o QR da imagem.";
-      setErro(`Falha ao ler imagem: ${mensagem}`);
-      setStatus("idle");
+      try {
+        const { createWorker } = await import("tesseract.js");
+        const worker = await createWorker("por");
+        const { data: ocr } = await worker.recognize(arquivo);
+        await worker.terminate();
+
+        const dadosOCR = parsearTextoCupom(ocr.text || "");
+        const encontrouAlgo =
+          Boolean(dadosOCR.nomeEstabelecimento) ||
+          dadosOCR.valorTotal != null ||
+          Boolean(dadosOCR.dataCompra);
+
+        if (!encontrouAlgo) {
+          throw new Error("OCR não encontrou campos úteis na imagem.");
+        }
+
+        preencherFormularioPorDados(dadosOCR);
+        setErro("QR não identificado, mas extraí dados pelo texto da imagem. Revise antes de salvar.");
+      } catch (ocrErr) {
+        const mensagem = ocrErr instanceof Error ? ocrErr.message : "Não foi possível ler o QR ou extrair texto da imagem.";
+        setErro(`Falha ao ler imagem: ${mensagem}`);
+        setStatus("idle");
+      }
     } finally {
       try {
         leitorArquivo.clear();
@@ -184,6 +205,9 @@ export default function EscanearNota() {
       {status === "scanning" && (
         <div className="card">
           <div id="leitor-qr" style={{ width: "100%", maxWidth: "400px", margin: "0 auto 1rem" }} />
+          <p className="muted" style={{ marginBottom: "0.75rem" }}>
+            Processando leitura...
+          </p>
           {erro && <p className="alert alert-error">{erro}</p>}
           <button type="button" className="btn btn-secondary full" onClick={cancelarScan}>
             Cancelar
