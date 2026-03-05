@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAuth } from "../contextos/AuthContext";
 
 interface DashboardData {
@@ -59,52 +60,70 @@ export default function Dashboard() {
   }
 
   return (
-    <>
-      <div className="section-head">
-        <button type="button" className="btn btn-secondary" onClick={anterior} aria-label="Mês anterior">
-          ‹
-        </button>
-        <h2 className="section-title" style={{ fontSize: "1.125rem" }}>
-          {MESES[dados.mes - 1]} {dados.ano}
-        </h2>
-        <button type="button" className="btn btn-secondary" onClick={proximo} aria-label="Próximo mês">
-          ›
-        </button>
-      </div>
-
-      <div className="card" style={{ textAlign: "center", marginBottom: "1rem" }}>
-        <p className="muted" style={{ fontSize: "0.875rem", marginBottom: "0.25rem" }}>Saldo do mês</p>
-        <p className={dados.positivo ? "saldo-positivo" : "saldo-negativo"} style={{ fontSize: "1.75rem", fontWeight: 700 }}>
+    <div className="dashboard-app">
+      <section className="dashboard-balance-card">
+        <div className="dashboard-balance-head">
+          <button type="button" className="dashboard-month-btn" onClick={anterior} aria-label="Mês anterior">
+            ‹
+          </button>
+          <p className="dashboard-month-label">
+            {MESES[dados.mes - 1]} {dados.ano}
+          </p>
+          <button type="button" className="dashboard-month-btn" onClick={proximo} aria-label="Próximo mês">
+            ›
+          </button>
+        </div>
+        <p className="dashboard-balance-title">Saldo do mês</p>
+        <p className={`dashboard-balance-value ${dados.positivo ? "saldo-positivo" : "saldo-negativo"}`}>
           {formatarMoeda(dados.saldo)}
         </p>
-      </div>
+      </section>
 
-      <div className="card">
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <tbody>
-            <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
-              <td style={{ padding: "0.75rem 0", color: "#6b7280" }}>Receitas</td>
-              <td style={{ padding: "0.75rem 0", textAlign: "right", fontWeight: 500 }} className="saldo-positivo">
-                {formatarMoeda(dados.totalReceitas)}
-              </td>
-            </tr>
-            <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
-              <td style={{ padding: "0.75rem 0", color: "#6b7280" }}>Despesas fixas</td>
-              <td style={{ padding: "0.75rem 0", textAlign: "right" }}>{formatarMoeda(dados.totalDespesasFixas)}</td>
-            </tr>
-            <tr style={{ borderBottom: "1px solid #e5e7eb" }}>
-              <td style={{ padding: "0.75rem 0", color: "#6b7280" }}>Despesas extras</td>
-              <td style={{ padding: "0.75rem 0", textAlign: "right" }}>{formatarMoeda(dados.totalDespesasExtras)}</td>
-            </tr>
-            <tr>
-              <td style={{ padding: "0.75rem 0", fontWeight: 600 }}>Total de despesas</td>
-              <td style={{ padding: "0.75rem 0", textAlign: "right", fontWeight: 600 }} className="saldo-negativo">
-                {formatarMoeda(dados.totalDespesas)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </>
+      <section className="dashboard-stats-grid">
+        <article className="dashboard-stat-card">
+          <p className="dashboard-stat-label">Receitas</p>
+          <p className="dashboard-stat-value saldo-positivo">{formatarMoeda(dados.totalReceitas)}</p>
+        </article>
+        <article className="dashboard-stat-card">
+          <p className="dashboard-stat-label">Despesas fixas</p>
+          <p className="dashboard-stat-value">{formatarMoeda(dados.totalDespesasFixas)}</p>
+        </article>
+        <article className="dashboard-stat-card">
+          <p className="dashboard-stat-label">Despesas extras</p>
+          <p className="dashboard-stat-value">{formatarMoeda(dados.totalDespesasExtras)}</p>
+        </article>
+        <article className="dashboard-stat-card">
+          <p className="dashboard-stat-label">Total de despesas</p>
+          <p className="dashboard-stat-value saldo-negativo">{formatarMoeda(dados.totalDespesas)}</p>
+        </article>
+      </section>
+
+      <section className="card">
+        <div className="dashboard-row">
+          <span className="dashboard-row-label">Receitas</span>
+          <span className="dashboard-row-value saldo-positivo">{formatarMoeda(dados.totalReceitas)}</span>
+        </div>
+        <div className="dashboard-row">
+          <span className="dashboard-row-label">Despesas fixas</span>
+          <span className="dashboard-row-value">{formatarMoeda(dados.totalDespesasFixas)}</span>
+        </div>
+        <div className="dashboard-row">
+          <span className="dashboard-row-label">Despesas extras</span>
+          <span className="dashboard-row-value">{formatarMoeda(dados.totalDespesasExtras)}</span>
+        </div>
+      </section>
+
+      <section className="card">
+        <div className="section-head">
+          <h3 className="section-title" style={{ fontSize: "1rem" }}>Ações rápidas</h3>
+        </div>
+        <div className="dashboard-quick-actions">
+          <Link to="/receitas" className="dashboard-action-link">Receitas</Link>
+          <Link to="/despesas-fixas" className="dashboard-action-link">Fixas</Link>
+          <Link to="/despesas-extras" className="dashboard-action-link">Extras</Link>
+          <Link to="/relatorios" className="dashboard-action-link">Relatórios</Link>
+        </div>
+      </section>
+    </div>
   );
 }
