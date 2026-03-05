@@ -24,6 +24,7 @@ export default function EscanearNota() {
   const [data, setData] = useState(new Date().toISOString().slice(0, 10));
   const [categoria, setCategoria] = useState(CATEGORIAS[0]);
   const scannerRef = useRef<Html5Qrcode | null>(null);
+  const arquivoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     return () => {
@@ -86,6 +87,38 @@ export default function EscanearNota() {
     setStatus("scanning");
   }
 
+  function abrirSeletorArquivo() {
+    setErro("");
+    arquivoInputRef.current?.click();
+  }
+
+  async function lerQrDeArquivo(e: React.ChangeEvent<HTMLInputElement>) {
+    const arquivo = e.target.files?.[0];
+    if (!arquivo) return;
+
+    setErro("");
+    setStatus("saving");
+    const leitorArquivo = new Html5Qrcode("leitor-qr-arquivo");
+
+    try {
+      const decodedText = await leitorArquivo.scanFile(arquivo, false);
+      const dados = parsearConteudoQR(decodedText);
+      setNome(dados.nomeEstabelecimento || "Nota fiscal");
+      setValor(dados.valorTotal != null ? dados.valorTotal.toFixed(2).replace(".", ",") : "");
+      setData(dados.dataCompra || new Date().toISOString().slice(0, 10));
+      setStatus("form");
+    } catch (err) {
+      const mensagem = err instanceof Error ? err.message : "Não foi possível ler o QR da imagem.";
+      setErro(`Falha ao ler imagem: ${mensagem}`);
+      setStatus("idle");
+    } finally {
+      await leitorArquivo.clear().catch(() => {});
+      if (arquivoInputRef.current) {
+        arquivoInputRef.current.value = "";
+      }
+    }
+  }
+
   function cancelarScan() {
     if (scannerRef.current?.isScanning) {
       scannerRef.current.stop().then(() => {
@@ -128,6 +161,19 @@ export default function EscanearNota() {
           <button type="button" className="btn btn-primary full" onClick={iniciarCamera}>
             Abrir câmera e escanear
           </button>
+          <button type="button" className="btn btn-secondary full" onClick={abrirSeletorArquivo} style={{ marginTop: "0.5rem" }}>
+            Selecionar foto do QR
+          </button>
+          <input
+            ref={arquivoInputRef}
+            type="file"
+            accept="image/*"
+            onChange={lerQrDeArquivo}
+            style={{ display: "none" }}
+          />
+          <p className="muted" style={{ marginTop: "0.75rem", fontSize: "0.9rem" }}>
+            Em HTTP, use a opção de foto. Câmera ao vivo exige HTTPS (ou localhost).
+          </p>
         </div>
       )}
 
@@ -187,6 +233,7 @@ export default function EscanearNota() {
           </div>
         </form>
       )}
+      <div id="leitor-qr-arquivo" style={{ display: "none" }} />
     </>
   );
 }
