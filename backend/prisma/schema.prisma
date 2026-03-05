@@ -17,6 +17,7 @@ model Casa {
   receitas       Receita[]
   despesasFixas  DespesaFixa[]
   despesasExtras DespesaExtra[]
+  objetivos      Objetivo[]
 
   @@map("casas")
 }
