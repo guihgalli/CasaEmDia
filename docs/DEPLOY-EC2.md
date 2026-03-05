@@ -235,6 +235,23 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.yml -f docker-compose.prod.yml restart backend
 ```
 
+### Erro 502 ou "Host is unreachable" ao fazer login/chamar API
+
+Se o Nginx retornar 502 ao acessar `/api/*`, o container do backend pode estar parado ou com falha. Verifique:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+docker compose -f docker-compose.yml -f docker-compose.prod.yml logs backend
+```
+
+Se o backend tiver caído (por exemplo após migração ou erro de conexão com o banco), suba de novo:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d backend
+```
+
+O frontend usa o nome do serviço `backend` para falar com a API; após reinício do backend, as requisições passam a usar o IP correto do container.
+
 ### Parar tudo
 
 ```bash

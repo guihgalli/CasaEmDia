@@ -16,8 +16,10 @@ RUN echo 'server { \
   listen 80; \
   root /usr/share/nginx/html; \
   index index.html; \
+  resolver 127.0.0.11 valid=10s ipv6=off; \
+  set $backend_upstream http://backend:3000; \
   location / { try_files $uri $uri/ /index.html; } \
-  location /api { proxy_pass http://backend:3000; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; } \
+  location /api { proxy_pass $backend_upstream; proxy_http_version 1.1; proxy_set_header Host $host; proxy_set_header X-Real-IP $remote_addr; proxy_connect_timeout 5s; proxy_read_timeout 60s; } \
 }' > /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
