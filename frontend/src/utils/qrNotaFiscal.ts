@@ -52,10 +52,11 @@ export function parsearConteudoQR(conteudo: string): DadosNotaFiscal {
   const linhas = conteudo.split(/[\n\r]+/).map((l) => l.trim()).filter(Boolean);
   const textoUnico = conteudo.replace(/\s+/g, " ");
 
-  // Valor total: procurar em linhas que contenham "total", "valor", "R$"
-  for (const linha of linhas) {
+  // Valor total:
+  // 1) Priorizar linhas com a palavra "total" (evitando "subtotal"), de baixo para cima.
+  for (const linha of [...linhas].reverse()) {
     const lower = linha.toLowerCase();
-    if (lower.includes("total") || lower.includes("valor") || lower.includes("r$")) {
+    if (/\btotal\b/.test(lower) && !lower.includes("subtotal")) {
       const v = extrairValor(linha);
       if (v != null) {
         resultado.valorTotal = v;
@@ -63,6 +64,21 @@ export function parsearConteudoQR(conteudo: string): DadosNotaFiscal {
       }
     }
   }
+
+  // 2) Se ainda não encontrou, procurar linhas com "valor" ou "R$"
+  if (resultado.valorTotal == null) {
+    for (const linha of linhas) {
+      const lower = linha.toLowerCase();
+      if (lower.includes("valor") || lower.includes("r$")) {
+        const v = extrairValor(linha);
+        if (v != null) {
+          resultado.valorTotal = v;
+          break;
+        }
+      }
+    }
+  }
+
   if (resultado.valorTotal == null) {
     const v = extrairValor(textoUnico);
     if (v != null) resultado.valorTotal = v;
