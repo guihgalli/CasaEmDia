@@ -78,7 +78,7 @@ export default function MinhaCasa() {
   return (
     <>
       <div className="card" style={{ marginBottom: "1rem" }}>
-        <h2 style={{ fontSize: "1.25rem", marginBottom: "0.5rem" }}>Minha casa</h2>
+        <h2 className="section-title" style={{ marginBottom: "0.5rem" }}>Minha casa</h2>
         <p className="muted" style={{ fontSize: "0.875rem" }}>
           {casa.nome || "Minha Casa"}
         </p>
@@ -88,8 +88,8 @@ export default function MinhaCasa() {
       </div>
 
       <div className="card">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-          <h2 style={{ fontSize: "1.125rem" }}>Membros</h2>
+        <div className="section-head">
+          <h2 style={{ fontSize: "1.125rem", fontWeight: 700 }}>Membros</h2>
           <button
             type="button"
             className="btn btn-primary"
@@ -138,26 +138,21 @@ export default function MinhaCasa() {
                 placeholder="Senha para login"
               />
             </div>
-            <button type="submit" className="btn btn-primary" disabled={enviando}>
+            <button type="submit" className="btn btn-primary full" disabled={enviando}>
               {enviando ? "Criando..." : "Criar usuário e adicionar à casa"}
             </button>
           </form>
         )}
 
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <ul className="list" style={{ margin: 0 }}>
           {membros.length === 0 ? (
-            <li className="muted" style={{ padding: "0.5rem 0" }}>Nenhum membro além de você.</li>
+            <li className="muted">Nenhum membro além de você.</li>
           ) : (
             membros.map((m) => (
               <li
                 key={m.id}
-                style={{
-                  padding: "0.75rem 0",
-                  borderBottom: "1px solid #e5e7eb",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
+                className="list-item"
+                style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "0.75rem" }}
               >
                 <div>
                   <span style={{ fontWeight: 500 }}>{m.nome || m.email}</span>

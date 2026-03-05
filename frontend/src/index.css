@@ -136,6 +136,33 @@ input, select {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
+.input-with-action {
+  position: relative;
+}
+
+.input-with-action input {
+  padding-right: 5.2rem;
+}
+
+.text-action {
+  position: absolute;
+  right: 0.45rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 0.82rem;
+  padding: 0.25rem 0.35rem;
+}
+
+.auth-footer {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px dashed #dbeafe;
+}
+
 .auth-wrap {
   max-width: 400px;
   padding-top: 3rem;
@@ -237,4 +264,92 @@ input, select {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.hero-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stack-mobile {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0.75rem 0.75rem 1.5rem;
+  }
+
+  .card {
+    border-radius: 14px;
+    padding: 1rem;
+  }
+
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+  }
+
+  .hero-user {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0.2rem;
+    scrollbar-width: thin;
+  }
+
+  .nav-tabs a {
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+
+  .section-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-head .btn {
+    width: 100%;
+  }
+
+  .list-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .list-item .btn {
+    width: 100%;
+  }
+
+  .auth-wrap {
+    padding-top: 1.25rem;
+  }
+
+  .auth-title {
+    font-size: 1.5rem;
+  }
+
+  .text-action {
+    font-size: 0.8rem;
+  }
+
+  .inline-row,
+  .stack-mobile {
+    width: 100%;
+  }
+
+  .stack-mobile > * {
+    flex: 1 1 100%;
+  }
 }

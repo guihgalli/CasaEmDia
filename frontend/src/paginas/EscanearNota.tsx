@@ -34,31 +34,48 @@ export default function EscanearNota() {
     };
   }, []);
 
-  async function iniciarCamera() {
+  useEffect(() => {
+    if (status !== "scanning") return;
+
+    let ativo = true;
+
+    async function iniciarScanner() {
+      try {
+        const scanner = new Html5Qrcode("leitor-qr");
+        scannerRef.current = scanner;
+        await scanner.start(
+          { facingMode: "environment" },
+          { fps: 5, qrbox: { width: 250, height: 250 } },
+          (decodedText) => {
+            if (!ativo) return;
+            scanner.stop().then(() => {
+              scannerRef.current = null;
+              const dados = parsearConteudoQR(decodedText);
+              setNome(dados.nomeEstabelecimento || "Nota fiscal");
+              setValor(dados.valorTotal != null ? dados.valorTotal.toFixed(2).replace(".", ",") : "");
+              setData(dados.dataCompra || new Date().toISOString().slice(0, 10));
+              setStatus("form");
+            }).catch(() => setStatus("idle"));
+          },
+          () => {}
+        );
+      } catch (e) {
+        if (!ativo) return;
+        setErro("Não foi possível acessar a câmera. Verifique as permissões ou use o cadastro manual.");
+        setStatus("idle");
+      }
+    }
+
+    iniciarScanner();
+
+    return () => {
+      ativo = false;
+    };
+  }, [status]);
+
+  function iniciarCamera() {
     setErro("");
     setStatus("scanning");
-    try {
-      const scanner = new Html5Qrcode("leitor-qr");
-      scannerRef.current = scanner;
-      await scanner.start(
-        { facingMode: "environment" },
-        { fps: 5, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
-          scanner.stop().then(() => {
-            scannerRef.current = null;
-            const dados = parsearConteudoQR(decodedText);
-            setNome(dados.nomeEstabelecimento || "Nota fiscal");
-            setValor(dados.valorTotal != null ? dados.valorTotal.toFixed(2).replace(".", ",") : "");
-            setData(dados.dataCompra || new Date().toISOString().slice(0, 10));
-            setStatus("form");
-          }).catch(() => setStatus("idle"));
-        },
-        () => {}
-      );
-    } catch (e) {
-      setErro("Não foi possível acessar a câmera. Verifique as permissões ou use o cadastro manual.");
-      setStatus("idle");
-    }
   }
 
   function cancelarScan() {

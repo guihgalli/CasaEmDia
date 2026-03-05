@@ -48,7 +48,7 @@ export default function Layout() {
             <h1 className="hero-title">Casa em Dia</h1>
             <p className="hero-subtitle">Finanças organizadas, família mais tranquila.</p>
           </div>
-          <div className="inline-row">
+          <div className="hero-user">
             <span style={{ fontSize: "0.875rem", opacity: 0.92 }}>{usuario?.email}</span>
             <button type="button" className="btn btn-secondary" onClick={logout}>
               Sair
@@ -77,7 +77,7 @@ export default function Layout() {
           <h1 className="hero-title">Casa em Dia</h1>
           <p className="hero-subtitle">Finanças organizadas, família mais tranquila.</p>
         </div>
-        <div className="inline-row">
+        <div className="hero-user">
           <span style={{ fontSize: "0.875rem", opacity: 0.92 }}>{usuario?.email}</span>
           <button type="button" className="btn btn-secondary" onClick={logout}>
             Sair
