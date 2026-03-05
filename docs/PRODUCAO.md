@@ -21,7 +21,8 @@ Em produção o backend **não sobe** se `DATABASE_URL`, `JWT_SECRET` ou `JWT_RE
 
 ## Deploy com Nginx (recomendado)
 
-- [ ] Use `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`.
+- [ ] Use `docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d` (ou `--build` após alterações).
+- [ ] As migrações do Prisma rodam **automaticamente** na subida do container do backend; não é preciso executar `prisma migrate` manualmente.
 - [ ] Frontend acessível só em `127.0.0.1:8080`; Nginx no host escuta em 80/443 e faz proxy.
 - [ ] Backend e PostgreSQL não expostos para a internet.
 

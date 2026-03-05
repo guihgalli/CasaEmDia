@@ -125,7 +125,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 Isso sobe:
 
 - **PostgreSQL** (apenas rede interna)
-- **Backend** (apenas rede interna, porta 3000)
+- **Backend** (apenas rede interna, porta 3000). Na inicialização o backend executa **`prisma migrate deploy`** automaticamente; não é necessário rodar migrações à mão.
 - **Frontend** em **localhost:8081** (Nginx em 8080/8443 faz proxy para ele)
 
 Verifique:

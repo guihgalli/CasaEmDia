@@ -11,7 +11,7 @@ Aplicativo de organização financeira familiar: receitas, despesas e registro r
 - **Frontend:** React (Vite) + TypeScript
 - **Backend:** Node.js + Express + TypeScript
 - **Banco:** PostgreSQL (schema em português)
-- **Deploy:** Docker Compose (Linux / EC2 AWS)
+- **Deploy:** Docker Compose (Linux / EC2 AWS). **A aplicação é executada em Docker**; as migrações do Prisma rodam automaticamente na subida do container do backend.
 
 ## Execução local (desenvolvimento)
 
@@ -27,6 +27,8 @@ cd frontend && npm install && npm run dev
 ```
 
 ## Produção (Docker – Linux / EC2)
+
+A aplicação roda em **Docker**. Ao subir os containers, o backend executa `prisma migrate deploy` na inicialização, então novas migrações são aplicadas automaticamente ao fazer `docker compose up -d --build` (ou equivalente).
 
 Para deploy com **Nginx e HTTPS** no EC2, use o guia completo:
 
@@ -55,6 +57,7 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 ## Funcionalidades v1
 
 - Cadastro, login e recuperação de senha
+- **Casa compartilhada:** criar uma “casa” e adicionar outros usuários (mesmo login) para compartilhar receitas e despesas
 - Receitas (nome, valor, recorrente)
 - Despesas fixas (nome, valor, vencimento, recorrente)
 - Despesas extras (manual e via QR Code de nota fiscal)
