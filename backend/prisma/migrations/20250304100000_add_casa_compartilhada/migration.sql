@@ -18,10 +18,10 @@ ALTER TABLE "despesas_extras" ADD COLUMN "casa_id" TEXT;
 -- Backfill: para cada usuário que tem receitas ou despesas, criar uma Casa e associar
 DO $$
 DECLARE
-  r RECORD;
+  rec RECORD;
   nova_casa_id TEXT;
 BEGIN
-  FOR r IN
+  FOR rec IN
     SELECT DISTINCT u.id AS usuario_id
     FROM usuarios u
     WHERE EXISTS (SELECT 1 FROM receitas r WHERE r.usuario_id = u.id)
@@ -29,10 +29,10 @@ BEGIN
        OR EXISTS (SELECT 1 FROM despesas_extras e WHERE e.usuario_id = u.id)
   LOOP
     INSERT INTO casas (id, nome, criado_em) VALUES (gen_random_uuid(), 'Minha Casa', NOW()) RETURNING id INTO nova_casa_id;
-    UPDATE usuarios SET casa_id = nova_casa_id WHERE id = r.usuario_id;
-    UPDATE receitas SET casa_id = nova_casa_id WHERE usuario_id = r.usuario_id;
-    UPDATE despesas_fixas SET casa_id = nova_casa_id WHERE usuario_id = r.usuario_id;
-    UPDATE despesas_extras SET casa_id = nova_casa_id WHERE usuario_id = r.usuario_id;
+    UPDATE usuarios SET casa_id = nova_casa_id WHERE id = rec.usuario_id;
+    UPDATE receitas SET casa_id = nova_casa_id WHERE usuario_id = rec.usuario_id;
+    UPDATE despesas_fixas SET casa_id = nova_casa_id WHERE usuario_id = rec.usuario_id;
+    UPDATE despesas_extras SET casa_id = nova_casa_id WHERE usuario_id = rec.usuario_id;
   END LOOP;
 END $$;
 

@@ -30,6 +30,8 @@ cd frontend && npm install && npm run dev
 
 A aplicação roda em **Docker**. Ao subir os containers, o backend executa `prisma migrate deploy` na inicialização, então novas migrações são aplicadas automaticamente ao fazer `docker compose up -d --build` (ou equivalente).
 
+Se uma migração falhar (ex.: P3018), marque como revertida, reverta o banco e suba de novo. Exemplo para a migração `20250304100000_add_casa_compartilhada`: `npx prisma migrate resolve --rolled-back 20250304100000_add_casa_compartilhada`, execute o SQL em `backend/prisma/migrations/20250304100000_add_casa_compartilhada/ROLLBACK_IF_FAILED.sql` no Postgres (ex.: `docker compose exec postgres psql -U casaemdia -d casaemdia` e colar os comandos), depois `docker compose up -d --build`.
+
 Para deploy com **Nginx e HTTPS** no EC2, use o guia completo:
 
 - **[Deploy no EC2 com Nginx e HTTPS](docs/DEPLOY-EC2.md)**
